@@ -23,9 +23,8 @@ if ($argc === 1) {
 $host = 'localhost';
 $script = '';
 $args = array();
-var_dump($argv);
+
 $remote_script_info = explode(':', $argv[1], 2);
-var_dump($remote_script_info);
 if (count($remote_script_info) === 1) {
     $script = trim($remote_script_info[0]);
 } else {
