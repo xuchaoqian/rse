@@ -1,0 +1,55 @@
+#!/usr/local/php/bin/php
+<?php
+
+namespace use_ns;
+
+require_once(__DIR__ . '/../lib/use/init.php');
+require_once(__DIR__ . '/../lib/use/executor.class.php');
+
+function show_help() {
+    echo "NAME\r\n";
+    echo "\tuse - Universal Script Executor.\r\n";
+    echo "SYNOPSIS\r\n";
+    echo "\t{$GLOBALS['argv'][0]} [host:]script[ args]\r\n";
+    echo "DESCRIPTION\r\n";
+    echo "\tuse connects and logs into the specified host and executes the runnable script with the args. If host is not given it's connected to the localhost. If args is not given it's assigned empty array.\r\n";
+}
+
+if ($argc === 1) {
+    show_help();
+    exit(0);
+}
+
+$host = 'localhost';
+$script = '';
+$args = array();
+var_dump($argv);
+$remote_script_info = explode(':', $argv[1], 2);
+var_dump($remote_script_info);
+if (count($remote_script_info) === 1) {
+    $script = trim($remote_script_info[0]);
+} else {
+    $host = trim($remote_script_info[0]);
+    $script = trim($remote_script_info[1]);
+}
+
+if ($argc > 2) {
+    for ($i = 2; $i < $argc; ++$i) {
+        $args[] = $argv[$i];
+    }
+}
+
+try {
+    $e = new executor();
+    $stdout = $e->run($host, $script, $args);
+    if ( ! empty($stdout)) {
+        echo $stdout;
+    }
+} catch (exception $e) {
+    echo $e->format_stack_trace();
+    exit(-7);
+}
+
+exit(0);
+
+?>

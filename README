@@ -1,1 +1,6 @@
-hello, github!
+NAME
+    use - Universal Script Executor.
+SYNOPSIS
+    bin/use [host:]script[ args]
+DESCRIPTION
+    use connects and logs into the specified host and executes the runnable script with the args. If host is not given it's connected to the localhost. If args is not given it's assigned empty array.
