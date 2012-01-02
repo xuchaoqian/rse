@@ -72,7 +72,7 @@ class exception extends native_exception {
 
             $j = 0;
             $thrown_at = "Thrown at [{$trace_elem['file']}:{$trace_elem['line']}]";
-            $trace .= "\t\t#$j {$thrown_at}$lf";
+            $trace .= "\t#$j {$thrown_at}$lf";
             ++$j;
 
             foreach ($trace_elem['trace'] as $trace_item) {
@@ -93,7 +93,7 @@ class exception extends native_exception {
 
                 $called_at = "Called at {$class}{$type}{$trace_item['function']}($args) "
                     . "[{$trace_item['file']}:{$trace_item['line']}]";
-                $trace .= "\t\t#$j {$called_at}$lf";
+                $trace .= "\t#$j {$called_at}$lf";
 
                 ++$j;
             }

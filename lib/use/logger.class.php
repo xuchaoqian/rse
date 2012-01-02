@@ -69,7 +69,12 @@ class logger{
 
     private function log($type, $previos_frame, $msg) {
         $fdt = $this->date_time->format('Y-m-d H:i:s');
-        $msg = "$fdt $type " . CURR_PID . ($previos_frame ? " $previos_frame " : ' ') . "- $msg\r\n";
+        if ($msg[strlen($msg)-1] == "\n") {
+            $nl = '';
+        } else {
+            $nl = "\r\n";
+        }
+        $msg = "$fdt $type " . CURR_PID . ($previos_frame ? " $previos_frame " : ' ') . "- $msg$nl";
         file_put_contents($this->log_file_path, $msg, FILE_APPEND);
     }
 

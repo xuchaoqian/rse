@@ -64,7 +64,7 @@ class executor {
 
             return $result['stdout'];
         } catch (exception $e) {
-            $this->logger->log_error($e->format_stack_trace());
+            $this->logger->log_error('exception: ' . $e->format_stack_trace());
 
             throw $e;
         }
@@ -107,22 +107,17 @@ if [[ ! -e {$this->conf['remote_tmp_dir']} ]]; then
     echo -n '-1|' >&2;
     exit -1;
 fi
-
 s='$remote_script_path';
-
 if [[ ! -e \\\${s} ]]; then
     echo -n '-2|' >&2;
     exit -2;
 fi
-
 rmt=\`stat -c %Y \\\${s}\`;
 if [[ $local_mod_time -gt \\\${rmt} ]]; then
     echo -n '-3|' >&2;
     exit -3;
 fi
-
 echo -n '0|' >&2;
-
 cd {$this->conf['remote_tmp_dir']};
 EOD;
 
@@ -156,11 +151,12 @@ EOD;
     }
 
     private function exec_cmd_noparse($cmd) {
-        $this->logger->log_info($cmd);
+        $this->logger->log_info("cmd: $cmd");
 
         $stdout = shell_exec($cmd);
-        $this->logger->log_info($stdout);
-
+        if ( ! empty($stdout)) {
+            $this->logger->log_info("stdout: $stdout");
+        }
         if (($stderr = file_get_contents($this->stderr_file_path)) === false) {
             throw new exception("file_get_contents() failed from stderr file: {$this->stderr_file_path}");
         }
@@ -169,7 +165,7 @@ EOD;
         }
         $stderr = trim($stderr);
         if ($stderr !== '') {
-            $this->logger->log_info($stderr);
+            $this->logger->log_info("stderr: $stderr");
         }
 
         return array('stdout'=>$stdout, 'stderr'=>$stderr);
