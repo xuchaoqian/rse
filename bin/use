@@ -25,7 +25,7 @@ function show_help() {
     echo "NAME\r\n";
     echo "\tuse - Universal Script Executor.\r\n";
     echo "SYNOPSIS\r\n";
-    echo "\t{$GLOBALS['argv'][0]} [host:]script[ args]\r\n";
+    echo "\t{$GLOBALS['argv'][0]} [host:]script[ arg1 arg2 ... argn]\r\n";
     echo "DESCRIPTION\r\n";
     echo "\tuse connects and logs into the specified host and executes the runnable script with the args. If host is not given it's connected to the localhost. If args is not given it's assigned empty array.\r\n";
 }
@@ -54,14 +54,14 @@ if ($argc > 2) {
 }
 
 try {
-    $e = new executor();
-    $stdout = $e->run($host, $script, $args);
+    $executor = new executor();
+    $stdout = $executor->run($host, $script, $args);
     if ( ! empty($stdout)) {
         echo $stdout;
     }
 } catch (exception $e) {
     echo $e->format_stack_trace();
-    exit(-7);
+    exit(-1);
 }
 
 exit(0);
