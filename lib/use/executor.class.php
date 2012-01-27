@@ -74,7 +74,6 @@ class executor {
         return "{$this->conf['scripts_dir']}/$script_path";
     }
 
-
     private function build_remote_script_path($script_path) {
         return "{$this->conf['remote_tmp_dir']}/$script_path";
     }
@@ -158,7 +157,8 @@ class executor {
         foreach ($dep_script_paths as $dep_script_path) {
             $file_list[] = $this->build_remote_script_path($dep_script_path);
             $time_list[] = $this->get_local_mod_time(
-                $this->build_local_script_path($dep_script_path));
+                    $this->build_local_script_path($dep_script_path)
+                );
         }
         $file_list_str = implode(' ', $file_list);
         $time_list_str = implode(' ', $time_list);
