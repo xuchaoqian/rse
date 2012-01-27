@@ -54,7 +54,7 @@ if ($argc > 2) {
 }
 
 try {
-    $executor = new executor();
+    $executor = new executor($GLOBALS['conf'], new logger($GLOBALS['conf']['log_dir']));
     $stdout = $executor->run($host, $script, $args);
     if ( ! empty($stdout)) {
         echo $stdout;

@@ -27,12 +27,10 @@ class logger{
     private $date_time;
     private $log_file_path;
 
-    public function __construct($conf = array()) {
-        verify_conf($conf);
-
+    public function __construct($log_dir) {
         $this->date_time = new DateTime();
         $fdt = $this->date_time->format('Ymd');
-        $this->log_file_path = "{$GLOBALS['conf']['log_dir']}/use.log.$fdt";
+        $this->log_file_path = "$log_dir/use.log.$fdt";
     }
 
     public function log_debug($msg) {

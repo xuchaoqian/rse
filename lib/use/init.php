@@ -21,11 +21,15 @@ use \DateTime;
 
 error_reporting(E_ALL);
 
-require_once(__DIR__ . '/../../conf/use.php');
+require_once(__DIR__ . '/../../conf/use.conf.php');
+require_once(__DIR__ . '/verify.function.php');
 require_once(__DIR__ . '/exception.class.php');
+require_once(__DIR__ . '/logger.class.php');
+
+verify_conf($GLOBALS['conf']);
 
 if ( ! date_default_timezone_set($conf['timezone'])) {
-    throw new exception('date_default_timezone_set() failed: timezone: ' . $conf['timezone']);
+    throw new exception('date_default_timezone_set() failed: timezone: ' . $GLOBALS['conf']['timezone']);
 }
 
 if ( ! defined('CURR_PID')) {
