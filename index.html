@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+
+  <title>xuchaoqian/use @ GitHub</title>
+
+  <style type="text/css">
+    body {
+      margin-top: 1.0em;
+      background-color: #2c9d50;
+      font-family: Helvetica, Arial, FreeSans, san-serif;
+      color: #ffffff;
+    }
+    #container {
+      margin: 0 auto;
+      width: 700px;
+    }
+    h1 { font-size: 3.8em; color: #d362af; margin-bottom: 3px; }
+    h1 .small { font-size: 0.4em; }
+    h1 a { text-decoration: none }
+    h2 { font-size: 1.5em; color: #d362af; }
+    h3 { text-align: center; color: #d362af; }
+    a { color: #d362af; }
+    .description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
+    .download { float: right; }
+    pre { background: #000; color: #fff; padding: 15px;}
+    hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
+    .footer { text-align:center; padding-top:30px; font-style: italic; }
+  </style>
+</head>
+
+<body>
+  <a href="https://github.com/xuchaoqian/use"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
+
+  <div id="container">
+
+    <div class="download">
+      <a href="https://github.com/xuchaoqian/use/zipball/master">
+        <img border="0" width="90" src="https://github.com/images/modules/download/zip.png"></a>
+      <a href="https://github.com/xuchaoqian/use/tarball/master">
+        <img border="0" width="90" src="https://github.com/images/modules/download/tar.png"></a>
+    </div>
+
+    <h1><a href="https://github.com/xuchaoqian/use">use</a>
+      <span class="small">by <a href="https://github.com/xuchaoqian">xuchaoqian</a></span></h1>
+
+    <div class="description">
+      Remote Script Executor
+    </div>
+
+    
+      <p>USE是本人的第一个开源项目。
+
+立项理由：1）集中编写维护、自动分发同步运维过程中用到的各个脚本；2）集中管理各个脚本产生的运行时信息（包括错误信息、日志等）；3）提供对现有程序无侵入式的管理方式。
+
+USE实现很简单，目前代码行数在600行左右，本人利用元旦放假时间完成。以<a href="http://www.apache.org/licenses/LICENSE-2.0.html" target="_blank">Apache License 2.0</a>协议发布，代码可在<a href="https://github.com/xuchaoqian/use" target="_blank">https://github.com/xuchaoqian/use</a>查看。
+
+<strong>设计简图如下：</strong>
+<a href="http://xuchaoqian.com/wp-content/uploads/2012/01/use.png"><img class="alignnone size-full wp-image-866" title="use" src="http://xuchaoqian.com/wp-content/uploads/2012/01/use.png" alt="" width="467" height="319" /></a>
+如图所示，所有的脚本都被集中管理起来了，已经不需要先手动分发到各远程机器再来执行了。现在只需在控制机上编写，存放到USE指定的目录（可配置），然后调用USE执行就可以了。
+
+透明性是USE在设计和实现时重点考虑的因素，对用户来说，脚本的编写、修改是在控制机，脚本的执行也好像是在控制机。USE会自动进行脚本分发、脚本同步（如果脚本过期了或者被意外删除了）、脚本日志记录（所有的脚本执行日志都在控制机可查）。而且，USE把分发过去的脚本放到远程机器上的特定的目录里（默认为/tmp/use），不会侵入远程机器上的应用程序。
+
+<strong>命令帮助：</strong>
+<blockquote>NAME
+    use - Universal Script Executor.
+SYNOPSIS
+    use [host:]script[ arg1 arg2 ... argn]
+DESCRIPTION
+    use connects and logs into the specified host and executes the runnable script with the args. If host is not given it's connected to the localhost. If args is not given it's assigned empty array.</blockquote>
+
+<strong>命令使用示例：</strong>
+[crayon lang="sh"]
+# The content of echo.sh: echo "$@";
+# The response: a"${b}'"\ c\"d 2012
+use echo.sh $'a"${b}\'\"\\' 'c\"d' 2012
+[/crayon]
+有兴趣的朋友可以直接用ssh执行一个远程命令来打印上述参数，看麻不麻烦？呵呵，用USE就不需要自己关心转义的事了。
+
+另外，考虑到在脚本编程中，调用其它脚本（更宽泛地说，是依赖其它的资源）是很正常的事，所以，USE增加了对#include指令的支持，现在只需要在脚本中include所依赖的文件就可以了。
+
+USE还提供了通过API编程的能力，如下：
+<strong>API编程示例：</strong>
+[crayon lang="php"]
+try {
+    $executor = new executor();
+    echo $executor->run($host, $script, $args);
+} catch (exception $e) {
+    echo $e->format_stack_trace();
+    exit(-1);
+}
+[/crayon]
+
+详细的，就不再赘述了，感兴趣的朋友可以自己翻代码看。
+
+---The end.</p>
+    
+
+    
+
+    
+
+    
+      <h2>License</h2>
+      <p>Apache License, Version 2.0</p>
+    
+
+    
+      <h2>Authors</h2>
+      <p>Xu Chaoqian (chaoranxu@gmail.com)<br/>      </p>
+    
+
+    
+      <h2>Contact</h2>
+      <p> (chaoranxu@gmail.com)<br/>      </p>
+    
+
+    <h2>Download</h2>
+    <p>
+      You can download this project in either
+      <a href="https://github.com/xuchaoqian/use/zipball/master">zip</a> or
+      <a href="https://github.com/xuchaoqian/use/tarball/master">tar formats.
+    </p>
+    <p>You can also clone the project with <a href="http://git-scm.com">Git</a>
+      by running:
+      <pre>$ git clone git://github.com/xuchaoqian/use</pre>
+    </p>
+
+    <div class="footer">
+      get the source code on GitHub : <a href="https://github.com/xuchaoqian/use">xuchaoqian/use</a>
+    </div>
+
+  </div>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-25795797-3");
+pageTracker._trackPageview();
+} catch(err) {}</script>"
+</body>
+</html>
