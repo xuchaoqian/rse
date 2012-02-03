@@ -1,6 +1,6 @@
 <?php
 /**
- *  Copyright 2012 http://xuchaoqian.com/opensource/use
+ *  Copyright 2012 http://xuchaoqian.com/opensource/rse
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -15,9 +15,84 @@
  *  limitations under the License.
  */
 
-namespace use_ns;
+namespace rse;
 
 require_once(__DIR__ . '/init.php');
+
+class request {
+    private $ssh_user;
+    private $ssh_host;
+    private $remote_cmd_header;
+    private $remote_cmd_body;
+    private $stderr_file_path;
+
+    public function __construct(
+        $ssh_user, $ssh_host, $remote_cmd_header, $remote_cmd_body, $stderr_file_path
+    ) {
+        $this->ssh_user = $ssh_user;
+        $this->ssh_host = $ssh_host;
+        $this->remote_cmd_header = $remote_cmd_header;
+        $this->remote_cmd_body = $remote_cmd_body;
+        $this->stderr_file_path = $stderr_file_path;
+    }
+
+    public function __get($name) {
+        if ( ! property_exists($this, $name)) {
+            throw new exception("Undefined property name: $name");
+        }
+        return $this->$name;
+    }
+
+    public function __isset($name) {
+        if (isset($this->$name)) {
+            return empty($this->$name) === false;
+        } else {
+            return null;
+        }
+        return $this->$name;
+    }
+
+    public function __tostring() {
+        return "ssh {$this->ssh_user}@{$this->ssh_host} \"{$this->remote_cmd_body}\" "
+            . "2>{$this->stderr_file_path} </dev/null";
+    }
+
+    public function to_cmd() {
+        return "ssh {$this->ssh_user}@{$this->ssh_host} "
+            . "\"{$this->remote_cmd_header} {$this->remote_cmd_body}\" "
+            . "2>{$this->stderr_file_path} </dev/null";
+    }
+}
+
+class response {
+    private $native_errno;
+    private $native_errmsg;
+    private $user_stdout;
+    private $user_stderr;
+
+    public function __construct($native_errno, $native_errmsg, $user_stdout, $user_stderr) {
+        $this->native_errno = $native_errno;
+        $this->native_errmsg = $native_errmsg;
+        $this->user_stdout = $user_stdout;
+        $this->user_stderr = $user_stderr;
+    }
+
+    public function __get($name) {
+        if ( ! property_exists($this, $name)) {
+            throw new exception("Undefined property name: $name");
+        }
+        return $this->$name;
+    }
+
+    public function __isset($name) {
+        if (isset($this->$name)) {
+            return empty($this->$name) === false;
+        } else {
+            return null;
+        }
+        return $this->$name;
+    }
+}
 
 class executor {
 
@@ -32,7 +107,7 @@ class executor {
     }
 
     private function build_stderr_file_path() {
-        return $this->conf['tmp_dir'] . '/use.stderr.' . CURR_PID;
+        return $this->conf['tmp_dir'] . '/rse.stderr.' . CURR_PID;
     }
 
     public function run($host, $script_path, $args = array()) {
@@ -44,25 +119,25 @@ class executor {
             $local_script_path = $this->build_local_script_path($script_path);
             $remote_script_path = $this->build_remote_script_path($script_path);
             $dep_script_paths = $this->parse_dep_script_paths($script_path);
-            $cmd = $this->build_cmd(
+            $request = $this->build_request(
                     $host, $local_script_path, $remote_script_path, $dep_script_paths, $args
                 );
-            $result = $this->exec_cmd($cmd);
+            $response = $this->send_request($request);
 
-            if ($result['native_errno'] !== 0) {
-                $this->handle_native_error($result['native_errno'], $result['native_errmsg'],
+            if ($response->native_errno !== 0) {
+                $this->handle_native_error($response->native_errno, $response->native_errmsg,
                         $host, $local_script_path, $remote_script_path, $dep_script_paths
                     );
-                $result = $this->exec_cmd($cmd);
-                if ($result['native_errno'] !== 0) {
+                $response = $this->send_request($request);
+                if ($response->native_errno !== 0) {
                     throw new exception('Nested error!');
                 }
             }
-            if ( ! empty($result['user_error'])) {
-                throw new exception($result['user_error']);
+            if ( ! empty($response->user_stderr)) {
+                throw new exception($response->user_stderr);
             }
 
-            return $result['stdout'];
+            return $response->user_stdout;
         } catch (exception $e) {
             $this->logger->log_error('exception: ' . $e->format_stack_trace());
 
@@ -125,30 +200,20 @@ class executor {
         fclose($handle);
     }
 
-    private function build_cmd(
-        $host, $local_script_path, $remote_script_path, $dep_script_paths, $args
-    ) {
-        $remote_cmd = $this->build_remote_cmd(
-                $host, $local_script_path, $remote_script_path, $dep_script_paths, $args
-            );
-
-        return "ssh {$this->conf['ssh_username']}@$host \"$remote_cmd\" 2>{$this->stderr_file_path}"
-                . ' </dev/null';
-    }
-
-    private function build_remote_cmd(
+    private function build_request(
         $host, $local_script_path, $remote_script_path, $dep_script_paths, $args
     ) {
         $remote_cmd_header = $this->build_remote_cmd_header(
-                $host, $local_script_path, $remote_script_path, $dep_script_paths
+                $local_script_path, $remote_script_path, $dep_script_paths
             );
         $remote_cmd_body = $this->build_remote_cmd_body($remote_script_path, $args);
 
-        return $remote_cmd_header . ' ' . $remote_cmd_body;
+        return new request($this->conf['ssh_user'], $host, $remote_cmd_header,
+                $remote_cmd_body, $this->stderr_file_path);
     }
 
     private function build_remote_cmd_header(
-        $host, $local_script_path, $remote_script_path, $dep_script_paths
+        $local_script_path, $remote_script_path, $dep_script_paths
     ) {
         $file_list = array();
         $file_list[] = $remote_script_path;
@@ -217,26 +282,40 @@ EOD;
         }
         $args_str = implode(' ', $arg_strs);
 
-        return "$remote_script_path $args_str;";
-    }
-
-    private function exec_cmd($cmd) {
-        $raw_result = $this->exec_cmd_noparse($cmd);
-        $stderr_array = $this->parse_stderr($raw_result['stderr']);
-
-        return array('stdout'=>$raw_result['stdout'],
-                'native_errno'=>$stderr_array['native_errno'],
-                'native_errmsg'=>$stderr_array['native_errmsg'],
-                'user_error'=>$stderr_array['user_error']);
-    }
-
-    private function exec_cmd_noparse($cmd) {
-        $this->logger->log_info("cmd: $cmd");
-
-        $stdout = shell_exec($cmd);
-        if ( ! empty($stdout)) {
-            $this->logger->log_info("stdout: $stdout");
+        if ($args_str) {
+            return "$remote_script_path $args_str";
+        } else {
+            return "$remote_script_path";
         }
+    }
+
+    private function send_request($request) {
+        $this->logger->log_info("request: $request");
+
+        $raw_result = $this->exec_cmd_raw($request->to_cmd());
+        if ( ! empty($raw_result['stdout'])) {
+            $this->logger->log_info("user_stdout: {$raw_result['stdout']}");
+        }
+        $stderr_array = $this->parse_stderr($raw_result['stderr']);
+        if ( ! empty($stderr_array['user_stderr'])) {
+            $this->logger->log_info("user_stderr: {$stderr_array['user_stderr']}");
+        }
+        if ($stderr_array['native_errno'] !== 0) {
+            if ( ! empty($stderr_array['native_errmsg'])) {
+                $this->logger->log_info('native_stderr: '
+                    . "{$stderr_array['native_errno']},{$stderr_array['native_errmsg']}");
+            } else {
+                $this->logger->log_info("native_stderr: {$stderr_array['native_errno']}");
+            }
+        }
+
+        return new response($stderr_array['native_errno'], $stderr_array['native_errmsg'],
+            $raw_result['stdout'], $stderr_array['user_stderr']);
+    }
+
+    private function exec_cmd_raw($cmd) {
+        $stdout = shell_exec($cmd);
+
         if (($stderr = file_get_contents($this->stderr_file_path)) === false) {
             throw new exception(
                     "file_get_contents() failed from stderr file: {$this->stderr_file_path}"
@@ -246,17 +325,17 @@ EOD;
             $this->logger->log_error("Can't delete file: {$this->stderr_file_path}");
         }
         $stderr = trim($stderr);
-        if ($stderr !== '') {
-            $this->logger->log_info("stderr: $stderr");
-        }
 
         return array('stdout'=>$stdout, 'stderr'=>$stderr);
     }
 
     private function parse_stderr($stderr) {
         $raw_stderr_array = explode('|', $stderr, 2);
-        $native_stderr_array = explode(',', $raw_stderr_array[0]);
+        if (count($raw_stderr_array) !== 2) {
+            throw new exception("Unexpected stderr: $stderr");
+        }
 
+        $native_stderr_array = explode(',', $raw_stderr_array[0]);
         if (count($native_stderr_array) === 1) {
             $native_errno = intval($native_stderr_array[0]);
             $native_errmsg = '';
@@ -271,7 +350,7 @@ EOD;
         }
 
         return array('native_errno'=>$native_errno, 'native_errmsg'=>$native_errmsg,
-                'user_error'=>$raw_stderr_array[1]);
+                'user_stderr'=>$raw_stderr_array[1]);
     }
 
     private function handle_native_error($native_errno, $native_errmsg, $host, $local_script_path,
@@ -311,17 +390,24 @@ EOD;
 
     private function create_remote_base_dirs($host, $remote_base_dirs) {
         $dirs_str = implode(' ', $remote_base_dirs);
-        $cmd = "ssh {$this->conf['ssh_username']}@$host 'mkdir -p $dirs_str'"
+        $cmd = "ssh {$this->conf['ssh_user']}@$host 'mkdir -p $dirs_str'"
                 . " 2>{$this->stderr_file_path} </dev/null";
 
         $this->exec_cmd_autothrow($cmd);
     }
 
     private function exec_cmd_autothrow($cmd) {
-        $raw_result = $this->exec_cmd_noparse($cmd);
+        $this->logger->log_info("native_cmd: $cmd");
+
+        $raw_result = $this->exec_cmd_raw($cmd);
+        if ( ! empty($raw_result['stdout'])) {
+            $this->logger->log_info("stdout: {$raw_result['stdout']}");
+        }
         if ( ! empty($raw_result['stderr'])) {
+            $this->logger->log_info("stderr: {$raw_result['stderr']}");
             throw new exception("exec_cmd() failed: {$raw_result['stderr']}");
         }
+
         return $raw_result['stdout'];
     }
 
@@ -337,7 +423,7 @@ EOD;
         }
         foreach ($grped_local_script_paths as $remote_base_dir => $local_script_paths_per_grp) {
             $paths_str = implode(' ', $local_script_paths_per_grp);
-            $cmd = "scp -p {$paths_str} {$this->conf['ssh_username']}@$host:{$remote_base_dir}"
+            $cmd = "scp -p {$paths_str} {$this->conf['ssh_user']}@$host:{$remote_base_dir}"
                     . " 2>{$this->stderr_file_path} </dev/null";
 
             $this->exec_cmd_autothrow($cmd);
@@ -350,7 +436,7 @@ EOD;
 
         $path = $script_path ? $this->build_remote_script_path($script_path)
                 : $this->conf['remote_tmp_dir'];
-        $cmd = "ssh {$this->conf['ssh_username']}@$host 'rm -rf $path' 2>{$this->stderr_file_path}"
+        $cmd = "ssh {$this->conf['ssh_user']}@$host 'rm -rf $path' 2>{$this->stderr_file_path}"
                 . ' </dev/null';
 
         $this->exec_cmd_autothrow($cmd);

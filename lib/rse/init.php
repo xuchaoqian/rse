@@ -1,6 +1,6 @@
 <?php
 /**
- *  Copyright 2012 http://xuchaoqian.com/opensource/use
+ *  Copyright 2012 http://xuchaoqian.com/opensource/rse
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -15,13 +15,13 @@
  *  limitations under the License.
  */
 
-namespace use_ns;
+namespace rse;
 
 use \DateTime;
 
 error_reporting(E_ALL);
 
-require_once(__DIR__ . '/../../conf/use.conf.php');
+require_once(__DIR__ . '/../../conf/rse.conf.php');
 require_once(__DIR__ . '/verify.function.php');
 require_once(__DIR__ . '/exception.class.php');
 require_once(__DIR__ . '/logger.class.php');

@@ -1,6 +1,6 @@
 NAME
-    use - Universal Script Executor.
+    rse - Remote Script Executor.
 SYNOPSIS
-    use [host:]script[ arg1 arg2 ... argn]
+    rse [host:]script[ arg1 arg2 ... argn]
 DESCRIPTION
-    use connects and logs into the specified host and executes the runnable script with the args. If host is not given it's connected to the localhost. If args is not given it's assigned empty array.
+    rse connects and logs into the specified host and executes the runnable script with the args. If host is not given it's connected to the localhost. If args is not given it's assigned empty array.

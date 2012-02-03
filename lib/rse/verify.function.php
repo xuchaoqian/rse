@@ -1,6 +1,6 @@
 <?php
 /**
- *  Copyright 2012 http://xuchaoqian.com/opensource/use
+ *  Copyright 2012 http://xuchaoqian.com/opensource/rse
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  *  limitations under the License.
  */
 
-namespace use_ns;
+namespace rse;
 
 require_once(__DIR__ . '/init.php');
 
@@ -29,7 +29,7 @@ function verify_conf($conf) {
             ;
         } else if ($key === 'tmp_dir') {
             ;
-        } else if ($key === 'ssh_username') {
+        } else if ($key === 'ssh_user') {
             ;
         } else if ($key === 'remote_tmp_dir') {
             ;

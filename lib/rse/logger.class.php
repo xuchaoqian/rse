@@ -1,6 +1,6 @@
 <?php
 /**
- *  Copyright 2012 http://xuchaoqian.com/opensource/use
+ *  Copyright 2012 http://xuchaoqian.com/opensource/rse
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  *  limitations under the License.
  */
 
-namespace use_ns;
+namespace rse;
 
 require_once(__DIR__ . '/init.php');
 require_once(__DIR__ . '/verify.function.php');
@@ -30,7 +30,7 @@ class logger{
     public function __construct($log_dir) {
         $this->date_time = new DateTime();
         $fdt = $this->date_time->format('Ymd');
-        $this->log_file_path = "$log_dir/use.log.$fdt";
+        $this->log_file_path = "$log_dir/rse.log.$fdt";
     }
 
     public function log_debug($msg) {

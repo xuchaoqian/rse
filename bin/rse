@@ -1,7 +1,7 @@
 #!/usr/local/php/bin/php
 <?php
 /**
- *  Copyright 2012 http://xuchaoqian.com/opensource/use
+ *  Copyright 2012 http://xuchaoqian.com/opensource/rse
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,18 +16,18 @@
  *  limitations under the License.
  */
 
-namespace use_ns;
+namespace rse;
 
-require_once(__DIR__ . '/../lib/use/init.php');
-require_once(__DIR__ . '/../lib/use/executor.class.php');
+require_once(__DIR__ . '/../lib/rse/init.php');
+require_once(__DIR__ . '/../lib/rse/executor.class.php');
 
 function show_help() {
     echo "NAME\r\n";
-    echo "\tuse - Universal Script Executor.\r\n";
+    echo "\trse - Remote Script Executor.\r\n";
     echo "SYNOPSIS\r\n";
     echo "\t{$GLOBALS['argv'][0]} [host:]script[ arg1 arg2 ... argn]\r\n";
     echo "DESCRIPTION\r\n";
-    echo "\tuse connects and logs into the specified host and executes the runnable script with the args. If host is not given it's connected to the localhost. If args is not given it's assigned empty array.\r\n";
+    echo "\trse connects and logs into the specified host and executes the runnable script with the args. If host is not given it's connected to the localhost. If args is not given it's assigned empty array.\r\n";
 }
 
 if ($argc === 1) {
