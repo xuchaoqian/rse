@@ -133,7 +133,7 @@ class executor {
                     throw new exception('Nested error!');
                 }
             }
-            if ( ! empty($response->user_stderr)) {
+            if ($response->user_stderr !== '') {
                 throw new exception($response->user_stderr);
             }
 
@@ -292,16 +292,16 @@ EOD;
     private function send_request($request) {
         $this->logger->log_info("request: $request");
 
-        $raw_result = $this->exec_cmd_raw($request->to_cmd());
-        if ( ! empty($raw_result['stdout'])) {
+        $raw_result = $this->exec_cmd_raw($request->to_cmd());var_dump($raw_result);
+        if ($raw_result['stdout'] !== null) {
             $this->logger->log_info("user_stdout: {$raw_result['stdout']}");
         }
-        $stderr_array = $this->parse_stderr($raw_result['stderr']);
-        if ( ! empty($stderr_array['user_stderr'])) {
+        $stderr_array = $this->parse_stderr($raw_result['stderr']);var_dump($stderr_array);
+        if ($stderr_array['user_stderr'] !== '') {
             $this->logger->log_info("user_stderr: {$stderr_array['user_stderr']}");
         }
         if ($stderr_array['native_errno'] !== 0) {
-            if ( ! empty($stderr_array['native_errmsg'])) {
+            if ($stderr_array['native_errmsg'] !== '') {
                 $this->logger->log_info('native_stderr: '
                     . "{$stderr_array['native_errno']},{$stderr_array['native_errmsg']}");
             } else {
@@ -400,10 +400,10 @@ EOD;
         $this->logger->log_info("native_cmd: $cmd");
 
         $raw_result = $this->exec_cmd_raw($cmd);
-        if ( ! empty($raw_result['stdout'])) {
+        if ($raw_result['stdout'] !== null) {
             $this->logger->log_info("stdout: {$raw_result['stdout']}");
         }
-        if ( ! empty($raw_result['stderr'])) {
+        if ($raw_result['stderr'] !== '') {
             $this->logger->log_info("stderr: {$raw_result['stderr']}");
             throw new exception("exec_cmd() failed: {$raw_result['stderr']}");
         }
