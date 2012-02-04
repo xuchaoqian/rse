@@ -292,11 +292,11 @@ EOD;
     private function send_request($request) {
         $this->logger->log_info("request: $request");
 
-        $raw_result = $this->exec_cmd_raw($request->to_cmd());var_dump($raw_result);
+        $raw_result = $this->exec_cmd_raw($request->to_cmd());
         if ($raw_result['stdout'] !== null) {
             $this->logger->log_info("user_stdout: {$raw_result['stdout']}");
         }
-        $stderr_array = $this->parse_stderr($raw_result['stderr']);var_dump($stderr_array);
+        $stderr_array = $this->parse_stderr($raw_result['stderr']);
         if ($stderr_array['user_stderr'] !== '') {
             $this->logger->log_info("user_stderr: {$stderr_array['user_stderr']}");
         }
