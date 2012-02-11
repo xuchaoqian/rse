@@ -19,13 +19,15 @@ namespace rse;
 
 require_once(__DIR__ . '/init.php');
 
+use common\exception;
+
 function verify_conf($conf) {
     foreach($GLOBALS['conf'] as $key => $value) {
         if ($key === 'timezone') {
             ;
         } else if ($key === 'scripts_dir') {
             ;
-        } else if ($key === 'log_dir') {
+        } else if ($key === 'log_file') {
             ;
         } else if ($key === 'tmp_dir') {
             ;

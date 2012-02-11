@@ -21,6 +21,9 @@ namespace rse;
 require_once(__DIR__ . '/../lib/rse/init.php');
 require_once(__DIR__ . '/../lib/rse/executor.class.php');
 
+use common\logger;
+use common\exception;
+
 function show_help() {
     echo "NAME\r\n";
     echo "\trse - Remote Script Executor.\r\n";
@@ -54,7 +57,7 @@ if ($argc > 2) {
 }
 
 try {
-    $executor = new executor($GLOBALS['conf'], new logger($GLOBALS['conf']['log_dir']));
+    $executor = new executor($GLOBALS['conf'], new logger($GLOBALS['conf']['log_file']));
     $stdout = $executor->run($host, $script, $args);
     if ( ! empty($stdout)) {
         echo $stdout;

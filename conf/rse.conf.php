@@ -22,7 +22,7 @@ $conf['timezone'] = 'Asia/Chongqing';
 
 $conf['scripts_dir'] = __DIR__ . '/../scripts';
 
-$conf['log_dir'] = __DIR__ . '/../log';
+$conf['log_file'] = __DIR__ . '/../log/rse.log';
 
 // for placing local tmp file
 $conf['tmp_dir'] = __DIR__ . '/../tmp';

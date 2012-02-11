@@ -19,6 +19,9 @@ namespace rse;
 
 require_once(__DIR__ . '/init.php');
 
+use common\exception;
+use common\logger;
+
 class request {
     private $ssh_user;
     private $ssh_host;

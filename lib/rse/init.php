@@ -17,14 +17,15 @@
 
 namespace rse;
 
-use \DateTime;
-
 error_reporting(E_ALL);
 
+require_once(__DIR__ . '/../common/exception.class.php');
+require_once(__DIR__ . '/../common/logger.class.php');
 require_once(__DIR__ . '/../../conf/rse.conf.php');
 require_once(__DIR__ . '/verify.function.php');
-require_once(__DIR__ . '/exception.class.php');
-require_once(__DIR__ . '/logger.class.php');
+
+use common\exception;
+use common\logger;
 
 verify_conf($GLOBALS['conf']);
 
